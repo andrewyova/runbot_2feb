@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="replace_default_discount_bill" model="ir.ui.view">
+			<field name="name">replace.default.discount.bill</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_supplier_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='discount']" position="replace">
+					<field name="discount_m2m" widget="many2many_tags" />
+				</xpath>
+			</field>
+		</record>
+		
+		<record id="acount_invoice_discount" model="ir.ui.view">
+            <field name="name">account.invoice.discount</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+            	<!--Remove Discount(%)-->
+                <xpath expr="//tree/field[@name='discount']" position="replace">
+                	<field name="discount_m2m" widget="many2many_tags" />
+                	<field name="product_tags" invisible="1"/>
+                	<field name="qty_returned"/>
+                </xpath>
+            </field>
+        </record>
+	</data>
+</openerp>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Form View Tags  -->
+    	<record id="product_tags_form_view" model="ir.ui.view">
+    		<field name="name">product.tags.form.view</field>
+    		<field name="model">product.tags</field>
+            <field name="arch" type="xml">
+				<tree string="Tags">
+                    <field name="name"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+    	</record>
+    	
+    	<!-- Menu Tags -->
+    	<record model='ir.actions.act_window' id='product_tags_action_menu'>
+            <field name="name">Tags</field>
+            <field name="res_model">product.tags</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Tags
+                </p>    
+            </field>
+        </record>
+        
+         <!--Add product tags in product-->
+    	<record id="product_template_product_tags" model="ir.ui.view">
+            <field name="name">product.template.product.tags</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">          	
+				<field name="default_code" position="after">
+                   <field name="tags" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+        
+        <!--Add product tags in product-->
+    	<record id="product_product_product_tags" model="ir.ui.view">
+            <field name="name">product.product.product.tags</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">          	
+				<field name="default_code" position="after">
+                   <field name="tags" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+        
+        
+        <menuitem action="product_tags_action_menu" id="product_tags_menu" parent="base.menu_sale_config" sequence="109"/>
+	</data>
+</openerp>

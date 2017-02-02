@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Form View Discount Customer  -->
+    	<record id="discount_discount_tree_view" model="ir.ui.view">
+    		<field name="name">discount.discount.tree.view</field>
+    		<field name="model">discount.discount</field>
+            <field name="arch" type="xml">
+				<tree string="Discount customer">
+                    <field name="name"/>
+                    <field name="percentage"/>
+                </tree>
+            </field>
+    	</record>
+    	
+    	<!-- Form View Discount Customer  -->
+        <record id="discount_discount_form_view" model="ir.ui.view">
+            <field name="name">discount.discount.form.view</field>
+            <field name="model">discount.discount</field>
+            <field name="arch" type="xml">
+                <form string="Discount Global">
+                   <group>
+                       <group>
+                           <field name="status"/>
+                           <field name="tags"/>
+                           <field name="percentage"/>
+                       	   <field name="account_id"/>
+                       </group>
+                       <group>
+                           <field name="name"/>
+                           <field name="expired_date"/>
+                           <field name="type" invisible="context.get('hide_type',False)"/>
+                           <field name = "sequence_discount" />
+                       </group>
+                   </group>
+                </form>
+            </field>
+        </record>
+        
+         <!-- Menu  Discount Customer -->
+    	<record model='ir.actions.act_window' id='discount_discount_action_menu'>
+            <field name="name">Discount Customer</field>
+            <field name="res_model">discount.discount</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'group_by': 'type'}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Discount Customer
+                </p>    
+            </field>
+        </record>
+        
+       
+                
+       <!-- Add discount customer in res partner -->
+		<record id="customer_discount_customer" model="ir.ui.view">
+    		<field name="name">customer.discount.customer</field>
+    		<field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+            	<field name="website" position="after">
+            	    <field name="discount_customer" domain="['|',('type','=','additional'),
+                   											  ('type','=','volume'),('status','=',True)]"/>
+                </field>
+            </field>  	
+         </record>
+         
+        
+        
+        <!-- add sale order discount -->
+      <record id="sale_order_discounts" model="ir.ui.view">
+    		<field name="name">sale.order.discounts</field>
+    		<field name="model">sale.order.discounts</field>
+            <field name="arch" type="xml">
+				<tree string="Order method">
+                    <field name="order_id" invisible="1"/>
+                    <field name="discount_id"/>
+                </tree>
+            </field>
+    	</record> 
+        
+        <!-- Add Discount Customer Order in sale order -->
+		<record id="customer_sale_order_discount" model="ir.ui.view">
+    		<field name="name">customer.sale.order.discount</field>
+    		<field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+            	<button name="action_quotation_send" position="before">
+            		<button name="button_dummy" type="object" string="Update Global Discount"
+            				class="btn-primary"
+                        	attrs="{'invisible': [('state', 'in', ('done','sale','cancel'))]}"/>
+            	</button>
+                <field name="validity_date" position="after">
+                	<field name="discount_cust_order" attrs="{'readonly': [('state', 'in', ('sale','done'))]}">
+                   		<tree string="Discount SO" editable="bottom">
+                   			<field name="discount_id" domain="[('type','=','sale_order'),('status','=',True)]" 
+                   			required="1" context="{'default_type': 'sale_order', 'hide_type': True,'default_status': True}"/> <!-- context="{'sale_id' : active_id }" -->
+                   		</tree>
+                   	</field>
+                </field>
+                
+                 <xpath expr="//tree/field[@name='product_id']" position="attributes">
+                	<attribute name="options">{'no_create': True}</attribute>
+                	<attribute name="attrs">{'readonly': ['|','|', ('is_free','=',True), ('qty_invoiced', '&gt;', 0), ('procurement_ids', '!=', [])]}</attribute>
+                </xpath>
+                
+                <!-- THIS FOR FINANCE WHEN CHECK editable_price -> true -->
+                <xpath expr="//tree/field[@name='price_unit']" position="attributes">
+                	<attribute name="attrs">{'readonly' :[('editable_price', '=', False)]}</attribute>
+                </xpath>
+                
+               <!--Remove Discount(%) -->
+                <xpath expr="//tree/field[@name='discount']" position="replace">
+                	<field name="discount_m2m" attrs="{'invisible': [('editable_discount', '=', False)],'readonly': [('state', 'in', ('sale','done'))]}" widget="many2many_tags" domain="[('type','=','extra')]"/>
+                	<field name="is_free" invisible="1"/>
+                </xpath> 
+                
+                <xpath expr="//tree/field[@name='name']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//tree/field[@name='tax_id']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//tree/field[@name='product_uom']" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                
+                <xpath expr="//tree/field[@name='qty_delivered']" position="after">
+                    <field name="qty_returned" readonly="1"/>
+                    <field name="product_tags" invisible="1"/>
+                    <field name="editable_discount" invisible="1"/>
+                    <field name="editable_price" invisible="1"/>
+                    <field name="price_unit_hidden" invisible="1"/>
+            	</xpath>
+            	<xpath expr="//tree/field[@name='qty_delivered']" position="attributes">
+            		<attribute name="readonly">1</attribute>
+            		<attribute name="invisible">0</attribute>
+            	</xpath>
+            	<xpath expr="//tree/field[@name='product_uom_qty']" position="attributes">
+            		<attribute name="attrs">{'readonly': [('state', 'in', ('sale','done'))]}</attribute> 
+            	</xpath>
+              </field>	
+    	</record>
+        
+        
+        
+        <menuitem action="discount_discount_action_menu" id="discount_customer_menu" parent="base.menu_sale_config" sequence="104"/>
+        
+    	
+	</data>
+</openerp>

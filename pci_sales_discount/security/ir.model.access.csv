@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pci_discount_discount_sales_man,pci.discount.discount.sales.man,model_discount_discount,base.group_user,1,0,0,0
+access_sale_discount_user,sale.discount.user,model_sale_order_discounts,base.group_user,1,1,1,1
